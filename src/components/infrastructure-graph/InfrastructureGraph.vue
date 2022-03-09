@@ -1,19 +1,16 @@
 <template>
+  <div class="button-wrapper">
+    <span>Path Kind:</span>
+    <button type="button" @click="updateCurrentPathKind('straight')">Straight</button>
+    <button type="button" @click="updateCurrentPathKind('straight-zigzag')">Straight ZigZag</button>
+    <button type="button" @click="updateCurrentPathKind('curved-zigzag')">Curved ZigZag</button>
+  </div>
   <svg
     :class="canvasClass"
     :width="width"
     :height="height"
   >
     <g data-name="lines">
-      <!-- <line
-        v-for="({ x1, x2, y1, y2, status }, li) in lines"
-        :key="li"
-        :x1="x1"
-        :x2="x2"
-        :y1="y1"
-        :y2="y2"
-        :class="`line line--${status}`"
-      /> -->
       <path
         v-for="(line, li) in lines"
         :key="li"
@@ -21,15 +18,7 @@
         :class="`path path--${line.status}`"
       />
     </g>
-    <g data-name="circles">
-      <!-- <circle
-        v-for="({ x, y, status }, ci) in flatScene"
-        :key="ci"
-        :cx="x"
-        :cy="y"
-        r="30"
-        :class="`circle circle--${status}`"
-      /> -->
+    <g data-name="icons">
       <InstanceIcon
         v-for="({ x, y, status, id }, ci) in flatScene"
         :key="ci"
@@ -51,7 +40,7 @@
 
 <script>
   import InstanceIcon from './icones/Instance.vue';
-  import { computed, onMounted } from 'vue';
+  import { computed, ref } from 'vue';
   import { buildScene, buildLines, flatten } from './helpers/scene.js';
 
   export default {
@@ -62,22 +51,26 @@
     props: ['width', 'height', 'kind', 'scene'],
     setup(props) {
       const BASE_CLASS = 'main_canvas';
+      const currentPathKind = ref('straight');
+
+      const updateCurrentPathKind = kind => {
+        currentPathKind.value = kind;
+      };
+
       const canvasClass = computed(() => {
         return `${BASE_CLASS} ${BASE_CLASS}${props.kind === 'dark' ? '--dark' : '--light'}`;
       })
       const processedScene = computed(() => {
         return props.scene ? buildScene(props.scene, { height: props.height, width: props.width }) : [];
       })
-
       const flatScene = computed(() => {
         return flatten(processedScene.value);
       });
-
       const lines = computed(() => {
-        return buildLines(flatScene.value);
+        return buildLines(flatScene.value, { pathKind: currentPathKind.value });
       });
 
-      return { canvasClass, processedScene, flatScene, lines };
+      return { canvasClass, processedScene, flatScene, lines, updateCurrentPathKind };
     }
   }
 </script>
@@ -94,6 +87,12 @@
   };
 </style>
 <style scoped lang="postcss">
+  .button-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
   .main_canvas--dark {
     background-color: #777;
   }
