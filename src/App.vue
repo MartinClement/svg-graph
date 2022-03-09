@@ -56,12 +56,17 @@
 
   const scenes = [
     [
-      [{ id: 'origin', status: 'online', to: ['top-child', 'bottom-child', 'middle-top-child', 'middle-bottom-child' ] }],
       [
-        { id: 'top-child', status: 'online' },
-        { id: 'middle-top-child', status: 'online' },
-        { id: 'middle-bottom-child', status: 'online' },
-        { id: 'bottom-child', status: 'online' },
+        { id: 'origin_one', status: 'online', to: ['top-child', 'middle-top-child'] },
+        { id: 'origin_two', status: 'online' },
+        { id: 'origin_two', status: 'online' },
+        { id: 'origin_two', status: 'online', to: [ 'bottom-child', 'middle-bottom-child'] }
+      ],
+      [
+        { id: 'top-child', status: 'loading' },
+        { id: 'middle-top-child', status: 'loading' },
+        { id: 'middle-bottom-child', status: 'loading' },
+        { id: 'bottom-child', status: 'loading' },
       ],
     ],
   ];

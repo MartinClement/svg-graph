@@ -31,13 +31,15 @@
         :class="`circle circle--${status}`"
       /> -->
       <InstanceIcon
-        v-for="({ x, y, status }, ci) in flatScene"
+        v-for="({ x, y, status, id }, ci) in flatScene"
         :key="ci"
+        :data-id="id"
         :x="x"
         :y="y"
         width="50"
         height="50"
         :status="status"
+        @click="handleInstanceClick"
       />
     </g>
   </svg>
@@ -49,7 +51,7 @@
 
 <script>
   import InstanceIcon from './icones/Instance.vue';
-  import { computed } from 'vue';
+  import { computed, onMounted } from 'vue';
   import { buildScene, buildLines, flatten } from './helpers/scene.js';
 
   export default {
@@ -117,9 +119,12 @@
   .path {
     fill: transparent;
   }
+  .path--hidden {
+    stroke: transparent!important;
+  }
   .line--online,
   .path--online {
-    stroke: lightgreen  ;
+    stroke: lightgreen;
     stroke-width: 5;
   }
   .line--offline,
@@ -131,7 +136,7 @@
   .path--loading {
     stroke: darkgoldenrod;
     stroke-width: 5;
-    stroke-dasharray: 20;
+    stroke-dasharray: 10;
     animation: dashed 1s linear infinite;
   }
 </style>
