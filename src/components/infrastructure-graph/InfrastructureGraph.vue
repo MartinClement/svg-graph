@@ -19,7 +19,19 @@
       />
     </g>
     <g data-name="icons">
-      <InstanceIcon
+      <component
+        v-for="({ x, y, status, id, kind, context }, ci) in flatScene"
+        v-bind:is="resolveIconComponent(kind)"
+        :key="ci"
+        :data-id="id"
+        :x="x"
+        :y="y"
+        :context="context"
+        width="50"
+        height="50"
+        :status="status"
+      />
+      <!-- <InstanceIcon
         v-for="({ x, y, status, id }, ci) in flatScene"
         :key="ci"
         :data-id="id"
@@ -29,7 +41,7 @@
         height="50"
         :status="status"
         @click="handleInstanceClick"
-      />
+      /> -->
     </g>
   </svg>
   <div>
@@ -40,6 +52,7 @@
 
 <script>
   import InstanceIcon from './icones/Instance.vue';
+  import DefaultIcon from './icones/Default.vue';
   import { computed, ref } from 'vue';
   import { buildScene, buildLines, flatten } from './helpers/scene.js';
 
@@ -70,7 +83,21 @@
         return buildLines(flatScene.value, { pathKind: currentPathKind.value });
       });
 
-      return { canvasClass, processedScene, flatScene, lines, updateCurrentPathKind };
+      const resolveIconComponent = kind => {
+        switch(kind) {
+          case 'instances':
+            return InstanceIcon;
+          case 'placeholder':
+            return {
+              template: "<circle cy='x' cy='y' r='0' />",
+              props: ['x', 'y'],
+            };
+          default:
+            return DefaultIcon;
+        }
+      }
+
+      return { canvasClass, processedScene, flatScene, lines, updateCurrentPathKind, resolveIconComponent };
     }
   }
 </script>

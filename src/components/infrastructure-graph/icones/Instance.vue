@@ -4,18 +4,19 @@
     :y="realY"
     :height="height"
     :width="width"
-    viewbox="0 0 50 50"
+    viewbox="0 0 60 60"
     :class="['instance-icon', `instance-icon--${status}`]"
   >
     <path d="M 5 5 H5 45  V45 45 H45 5 Z" class='border'/>
     <rect x='15' y='15' width="20" height="20" class="rect" />
+    <text x="25" y="30" text-anchor="middle">{{ context.count }}</text>
   </svg>
 </template>
 
 <script>
   export default {
     name: 'Instance',
-    props: ['width', 'height', 'status', 'x', 'y'],
+    props: ['width', 'height', 'status', 'x', 'y', 'context'],
     computed: {
       realX() {
         return this.x - this.width / 2;
