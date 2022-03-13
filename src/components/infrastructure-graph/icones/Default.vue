@@ -4,7 +4,7 @@
     :y="realY"
     :height="height"
     :width="width"
-    viewbox="0 0 50 50"
+    viewBox="0 0 50 50"
   >
     <circle :class="['default-icon', `default-icon--${status}`]" cx='25' cy='25' r=25 />
   </svg>
@@ -27,6 +27,6 @@
 
 <style scoped>
   .default-icon {
-    fill: whitesmoke;
+    fill: lightgrey;
   }
 </style>

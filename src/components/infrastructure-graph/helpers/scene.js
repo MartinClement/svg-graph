@@ -3,7 +3,7 @@ const buildScene = (scene, config) => {
   const { width, height } = config;
   return scene.map((col, colIndex) => {
     return col.map((row, rowIndex) => {
-      // ensure everything is centered and eually spaced;
+      // ensure everything is centered and equally spaced;
       const x = (width/scene.length) * ( colIndex + 1) - (width/scene.length)/2;
       const y = (height/col.length) * (rowIndex + 1) - (height/col.length)/2;
       return {...row, x, y};
@@ -16,19 +16,27 @@ const genStraightPath = (item, target) => {
 };
 
 const genStraightZigZagPath = (item, target) => {
-  const middle = target.x - item.x;
+  if (target.x === item.x ) {
+    return `M${item.x} ${item.y} V${target.y}`
+  }
 
+  const middle = item.x + ((target.x - item.x) / 2);
   return `M${item.x} ${item.y} H${middle} V${target.y} H${target.x}`;
 };
 
 const genCurvedZigZagPath = (item, target, curveGutter) => {
-  const middle = target.x - item.x;
+  const middle = item.x + ((target.x - item.x) / 2);
   const turnStart = middle - curveGutter;
-  const turnEnd = middle + curveGutter;
 
-  return item.y === target.y
-  ? `M${item.x} ${item.y} H${target.x}`
-  : `
+  if (target.x === item.x ) {
+    return `M${item.x} ${item.y} V${target.y}`
+  }
+
+  if (item.y === target.y) {
+    return `M${item.x} ${item.y} H${target.x}`
+  }
+
+  return `
      M${item.x} ${item.y}
      H${turnStart}
      C${middle} ${item.y}, ${middle} ${item.y}, ${middle} ${item.y > target.y ? item.y - curveGutter : item.y + curveGutter}
@@ -77,10 +85,11 @@ const buildLines = (scene, config) => {
 }
 
 const flatten = scene => {
-  console.log(scene);
-  return scene.reduce((flat, col) => {
+  const res =  scene.reduce((flat, col) => {
     return [...flat, ...col];
   });
+
+  return res;
 }
 
 export { buildScene, buildLines, flatten };
