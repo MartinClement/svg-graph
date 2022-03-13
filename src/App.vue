@@ -5,6 +5,7 @@
   import InstanceIcon from './components/infrastructure-graph/icones/Instance.vue';
   import DefaultIcon from './components/infrastructure-graph/icones/Default.vue';
   import LockerIcon from './components/infrastructure-graph/icones/Locker.vue';
+  import DatabaseIcon from './components/infrastructure-graph/icones/Database.vue';
 
   const scene = [
     [{ id: 'User', status: 'online', kind: 'default', to: ['EP'], w: 50, h: 50 }],
@@ -17,10 +18,10 @@
     ],
     [
       { id: 'EFS', status: 'online', kind: 'default', w:50, h:50 },
-      { id: 'L', status: 'online', kind: 'locker', to: ['EFS', 'AS', 'S3'], w:20, h:20 },
+      { id: 'L', status: 'online', kind: 'locker', to: ['EFS', 'RDS', 'S3'], w:20, h:20 },
       { id: 'S3', status: 'online', kind: 'default', w:50, h:50 },
     ],
-    [{ id: 'AS', status: 'online', kind: 'default',  w:50, h:50}],
+    [{ id: 'RDS', status: 'online', kind: 'db',  w:80, h:80}],
   ];
 
   const resolveIconeByKind = kind => {
@@ -29,6 +30,8 @@
         return InstanceIcon;
       case 'locker':
         return LockerIcon;
+      case 'db':
+        return DatabaseIcon;
       default:
         return DefaultIcon;
     }

@@ -91,13 +91,6 @@
 
       return { canvasClass, processedScene, flatScene, lines, updateCurrentPathKind };
     },
-    methods: {
-      getStrokeDashoffset(li) {
-        console.log(this.$refs);
-        // return this.$refs[`line_${li}`].getTotalLength();
-        return 1000;
-      },
-    },
   };
 </script>
 
@@ -116,7 +109,7 @@
     gap: 20px;
   }
   .main_canvas--dark {
-    background-color: #777;
+    background-color: #212121;
   }
   .main_canvas--light {
     background-color: #777;
