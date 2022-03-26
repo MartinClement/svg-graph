@@ -11,20 +11,39 @@ const buildScene = (scene, config) => {
   });
 };
 
+const computePathY = ({ targetIndex, targetsLength, originsGap, y }) => {
+  const length = (targetsLength-1) * originsGap;
+  const halfLength = length / 2;
+
+  console.log(targetIndex, targetsLength);
+  return y + ((targetIndex) * originsGap - halfLength);
+};
+
+
 const genStraightPath = (item, target) => {
   return `M${item.x} ${item.y} L${target.x} ${target.y}`;
 };
 
-const genStraightZigZagPath = (item, target) => {
+const genStraightZigZagPath = (item, target, config, context) => {
   if (target.x === item.x ) {
     return `M${item.x} ${item.y} V${target.y}`
   }
 
+  const baseY = config.dispatchOrigins
+    ? computePathY({
+        targetIndex: context.targetIndex,
+        targetsLength: context.targetsLength,
+        originsGap: config.originsGap,
+        y: item.y,
+      })
+    : item.y;
+
   const middle = item.x + ((target.x - item.x) / 2);
-  return `M${item.x} ${item.y} H${middle} V${target.y} H${target.x}`;
+  return `M${item.x} ${baseY} H${middle} V${target.y} H${target.x}`;
 };
 
-const genCurvedZigZagPath = (item, target, curveGutter) => {
+const genCurvedZigZagPath = (item, target, config, context) => {
+  const curveGutter = config.curveGutter;
   const middle = item.x + ((target.x - item.x) / 2);
   const turnStart = middle - curveGutter;
 
@@ -32,41 +51,54 @@ const genCurvedZigZagPath = (item, target, curveGutter) => {
     return `M${item.x} ${item.y} V${target.y}`
   }
 
-  if (item.y === target.y) {
-    return `M${item.x} ${item.y} H${target.x}`
+  // if (item.y === target.y) {
+  //   return `M${item.x} ${item.y} H${target.x}`
+  // }
+
+  const baseY = config.dispatchOrigins
+  ? computePathY({
+      targetIndex: context.targetIndex,
+      targetsLength: context.targetsLength,
+      originsGap: config.originsGap,
+      y: item.y,
+    })
+  : item.y;
+
+  if (baseY === target.y) {
+    return `M${item.x} ${baseY} H${target.x}`
   }
 
   return `
-     M${item.x} ${item.y}
+     M${item.x} ${baseY}
      H${turnStart}
-     C${middle} ${item.y}, ${middle} ${item.y}, ${middle} ${item.y > target.y ? item.y - curveGutter : item.y + curveGutter}
-     V${item.y < target.y ? target.y - curveGutter : target.y + curveGutter }
+     C${middle} ${baseY}, ${middle} ${baseY}, ${middle} ${baseY > target.y ? baseY - curveGutter : baseY + curveGutter}
+     V${baseY < target.y ? target.y - curveGutter : target.y + curveGutter }
      C${middle} ${target.y}, ${middle} ${target.y}, ${middle + curveGutter} ${ target.y}
      H${target.x}
    `;
 }
 
-const genPath = (item, target, config = {}) => {
-  const curveGutter = config.curveGutter ?? 20;
-  const pathKind = config.pathKind ?? 'straight';
+const genPath = (item, target, config = {}, context) => {
+  const pathKind = config.pathKind;
 
   switch(pathKind) {
     case 'straight':
       return genStraightPath(item, target);
     case 'straight-zigzag':
-      return genStraightZigZagPath(item, target);
+      return genStraightZigZagPath(item, target, config, context);
     case 'curved-zigzag':
-      return genCurvedZigZagPath(item, target, curveGutter);
+      return genCurvedZigZagPath(item, target, config, context);
   }
 }
 
 const buildLines = (scene, config) => {
   return scene.reduce((linesAcc, item) => {
     if (item.to) {
-      const res = item.to.reduce((acc, to) => {
+      const targetsLength = item.to.length;
+      const res = item.to.reduce((acc, to, toIndex) => {
          const target = scene.find(itm => itm.id === to);
          if (target) {
-          const path = genPath(item, target, config)
+          const path = genPath(item, target, config, { targetsLength, targetIndex: toIndex });
           return [
             ...acc,
             {

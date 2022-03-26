@@ -50,16 +50,14 @@
 
   @keyframes choke {
     0%   { transform: translateX(0);}
-    50%  { transform: translateX(10px);}
-    100% {transform: translateX(-10px);}
+    10%  { transform: translateX(2px);}
+    20% {transform: translateX(-2px);}
+    30%   { transform: translateX(0);}
+    100%   { transform: translateX(0);}
   }
 
   .instance-icon {
     stroke-width: 0.5;
-
-    [data-name="top"] {
-      animation: levitate 2s linear alternate infinite;
-    }
 
     &--online {
       .group { stroke: green; }
@@ -68,6 +66,9 @@
         fill: lightgreen;
         stroke: green;
         stroke-width: 1;
+      }
+      [data-name="top"] {
+        animation: levitate 2s linear alternate infinite;
       }
     }
     &--loading {
@@ -80,19 +81,20 @@
         stroke-dasharray: 10;
         animation: 2s dashed linear infinite;
       }
+      [data-name="top"] {
+        animation: levitate 2s linear alternate infinite;
+      }
     }
     &--error {
-      .group { stroke: orange; }
-      .glow { fill: orange; }
+      .group { stroke: red; }
+      .glow { fill: maroon; }
       .base {
-        fill: gold;
-        stroke: orange;
-        stroke-width: 1;
-        stroke-dasharray: 10;
-        animation: 2s dashed linear infinite;
+        fill: maroon;
+        stroke: red;
+      }
+      [data-name="top"] {
+        animation: choke 0.5s linear alternate infinite;
       }
     }
   }
-  
-
 </style>

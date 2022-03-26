@@ -7,14 +7,39 @@
   import LockerIcon from './components/infrastructure-graph/icones/Locker.vue';
   import DatabaseIcon from './components/infrastructure-graph/icones/Database.vue';
 
+  import { computed, ref } from 'vue';
+
+  const currentPathKind = ref('straight');
+  const currentDispatchOrigins = ref(false);
+  const lineGap = ref(5);
+  const updateCurrentPathKind = kind => {
+    currentPathKind.value = kind;
+  };
+
+  const updateDispatchOrigins = value => {
+    currentDispatchOrigins.value = value;
+  };
+
+  const updateLineGap = e => {
+    lineGap.value = e.target.value;
+  };
+
+  const graphConfig = computed(() => {
+    return {
+      pathKind: currentPathKind.value,
+      dispatchOrigins: currentDispatchOrigins.value,
+      originsGap: lineGap.value,
+    }
+  })
+
   const scene = [
     [{ id: 'User', status: 'online', kind: 'default', to: ['EP'], w: 50, h: 50 }],
     [{ id: 'EP', status: 'online', kind: 'default', to: ['ELB'], w: 50, h: 50 }],
     [{ id: 'ELB', status: 'online', kind: 'default', to: ['I1', 'I2', 'I3'], w: 50, h: 50 }],
     [
       { id: 'I1', status: 'online', kind: 'instances', to: ['L'], w:80, h:80 },
-      { id: 'I2', status: 'online', kind: 'instances', to: ['L'], w:80, h:80 },
-      { id: 'I3', status: 'online', kind: 'instances', to: ['L'], w:80, h:80 }
+      { id: 'I2', status: 'error', kind: 'instances', to: ['L'], w:80, h:80 },
+      { id: 'I3', status: 'loading', kind: 'instances', to: ['L'], w:80, h:80 }
     ],
     [
       { id: 'EFS', status: 'online', kind: 'default', w:50, h:50 },
@@ -40,15 +65,32 @@
 
 <template>
   <img alt="Vue logo" src="./assets/logo.png" />
+  <div class="button-wrapper">
+    <span>Path Kind:</span>
+    <button type="button" @click="updateCurrentPathKind('straight')">Straight</button>
+    <button type="button" @click="updateCurrentPathKind('straight-zigzag')">Straight ZigZag</button>
+    <button type="button" @click="updateCurrentPathKind('curved-zigzag')">Curved ZigZag</button>
+  </div>
+  <div class="button-wrapper">
+    <span>Dispatch Origins:</span>
+    <button type="button" @click="updateDispatchOrigins(true)">On</button>
+    <button type="button" @click="updateDispatchOrigins(false)">Off</button>
+  </div>
+  <div class="button-wrapper">
+    <span>lineGap:</span>
+    <input :value="lineGap" type="range" @change="e => updateLineGap(e)" min="0" max="20"/>
+    <span>{{ lineGap }}</span>
+  </div>
   <InfrastructureGraph
     :width="800"
     :height="400"
-    kind="dark"
+    kind="light"
     :scene="scene"
+    :config="graphConfig"
   >
     <template #icons="graphProps">
       <component
-        v-for="({ x, y, status, id, kind, context, w, h }, ii) in graphProps.icons"
+        v-for="({ x, y, status, kind, w, h }, ii) in graphProps.icons"
         :is='resolveIconeByKind(kind)'
         :key="ii"
         :x="x"
@@ -72,5 +114,12 @@
   justify-content: center;
   align-items: center;
   gap: 30px;
+}
+
+.button-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
 }
 </style>

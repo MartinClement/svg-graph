@@ -1,10 +1,4 @@
 <template>
-  <div class="button-wrapper">
-    <span>Path Kind:</span>
-    <button type="button" @click="updateCurrentPathKind('straight')">Straight</button>
-    <button type="button" @click="updateCurrentPathKind('straight-zigzag')">Straight ZigZag</button>
-    <button type="button" @click="updateCurrentPathKind('curved-zigzag')">Curved ZigZag</button>
-  </div>
   <svg
     :class="canvasClass"
     :width="width"
@@ -20,11 +14,18 @@
         :status="line.status"
         :line-id="li"
       />
+      <!-- <LinePath2
+        v-for="(line, li) in lines"
+        :key="li"
+        :path="line.path"
+        :status="line.status"
+        :line-id="li"
+      /> -->
     </g>
     <g data-name="icons">
       <slot name="icons" :icons="flatScene">
         <DefaultIcon
-          v-for="({ x, y, status, id, kind, context }, ci) in flatScene"
+          v-for="({ x, y, status, id, context }, ci) in flatScene"
           :key="ci"
           :data-id="id"
           :x="x"
@@ -47,6 +48,7 @@
   import InstanceIcon from './icones/Instance.vue';
   import DefaultIcon from './icones/Default.vue';
   import LinePath from './paths/Line.vue';
+  import LinePath2 from './paths/Line2.vue';
   import { computed, ref, onMounted } from 'vue';
   import { buildScene, buildLines, flatten } from './helpers/scene.js';
 
@@ -56,6 +58,7 @@
       InstanceIcon,
       DefaultIcon,
       LinePath,
+      LinePath2,
     },
     props: {
       width: Number,
@@ -64,6 +67,10 @@
         type: String,
         validator: v => ['dark', 'light'].includes(v),
       },
+      config: {
+        type: Object,
+        default: () => ({}),
+      },
       scene: {
         type: Array,
         default: [],
@@ -71,25 +78,32 @@
     },
     setup(props) {
       const BASE_CLASS = 'main_canvas';
-      const currentPathKind = ref('straight');
-      const updateCurrentPathKind = kind => {
-        currentPathKind.value = kind;
+      const BASE_CONFIG = {
+        dispatchOrigins: false,
+        curveGutter: 20,
+        originsGap: 5,
+        pathKind: 'straight',
       };
+
       const canvasClass = computed(() => {
         return `${BASE_CLASS} ${BASE_CLASS}${props.kind === 'dark' ? '--dark' : '--light'}`;
-      })
+      });
+
       const processedScene = computed(() => {
         return props.scene ? buildScene(props.scene, { height: props.height, width: props.width }) : [];
-      })
+      });
+
       const flatScene = computed(() => {
         const res = flatten(processedScene.value);
         return res;
       });
+
       const lines = computed(() => {
-        return buildLines(flatScene.value, { pathKind: currentPathKind.value });
+        const config = Object.assign(BASE_CONFIG, props.config)
+        return buildLines(flatScene.value, config);
       });
 
-      return { canvasClass, processedScene, flatScene, lines, updateCurrentPathKind };
+      return { canvasClass, processedScene, flatScene, lines };
     },
   };
 </script>
@@ -102,12 +116,6 @@
   };
 </style>
 <style scoped lang="postcss">
-  .button-wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-  }
   .main_canvas--dark {
     background-color: #212121;
   }

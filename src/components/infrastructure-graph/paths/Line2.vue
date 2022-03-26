@@ -12,12 +12,7 @@
   });
 
   const pathTotalLength = computed(() => lineRef.value ? lineRef.value.getTotalLength() : 10000);
-  const dashArray = computed(() => pathTotalLength.value / 10);
-  const dashOffset = computed(() => pathTotalLength.value);
-
-  onMounted(() => {
-    console.log(pathTotalLength.value);
-  })
+  const minusPathTotalLength = computed(() => -pathTotalLength.value);
 </script>
 
 <template>
@@ -28,55 +23,39 @@
       ref="lineRef"
       :id="`path_line_${lineId}`"
     />
-    <circle cx="" cy="" r="5" class="traveling-dot">
+    <!-- <circle cx="" cy="" r="5" class="traveling-dot">
       <animateMotion dur="2s" repeatCount="indefinite">
         <mpath :xlink:href="`#path_line_${lineId}`"/>
       </animateMotion>
-    </circle>
+    </circle> -->
   </g>
 </template>
 
 <style lang="scss" scoped>
-  @keyframes greenGlow {
-    from { fill: lightgreen }
-    to   { fill: green }
+  @keyframes slideIn {
+    from { stroke-dashoffset: v-bind(pathTotalLength)}
+    to   { stroke-dashoffset: v-bind(minusPathTotalLength)}
   }
-  @keyframes orangeGlow {
-    from { fill: gold }
-    to   { fill: orange }
-  }
-  @keyframes redGlow {
-    from { fill: transparent }
-    to   { fill: transparent }
-  }
-
   .line {
     stroke-width: 5;
+    stroke-dasharray: v-bind(pathTotalLength);
     fill: transparent;
+    animation: slideIn 2s linear infinite;
   }
 
   [data-line-status="online"] {
     .line {
       stroke: green;
     }
-    .traveling-dot {
-      animation: 1s greenGlow linear infinite alternate;
-    }
   }
   [data-line-status="loading"] {
     .line {
       stroke: orange;
     }
-    .traveling-dot {
-      animation: 1s orangeGlow linear infinite alternate;
-    }
   }
   [data-line-status="error"] {
     .line {
       stroke: transparent;
-    }
-    .traveling-dot {
-      animation: 1s redGlow linear infinite alternate;
     }
   }
 </style>

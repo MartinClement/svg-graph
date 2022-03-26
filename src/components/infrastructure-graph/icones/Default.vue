@@ -6,7 +6,7 @@
     :width="width"
     viewBox="0 0 50 50"
   >
-    <circle :class="['default-icon', `default-icon--${status}`]" cx='25' cy='25' r=25 />
+    <circle :class="['default-icon', `default-icon--${status}`]" cx="25" cy="25" r="25" />
   </svg>
 </template>
 
