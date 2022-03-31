@@ -12,45 +12,33 @@
         :key="li"
         :path="line.path"
         :status="line.status"
-        :line-id="li"
+        :line-id="`${li}-${uniqueId}`"
       />
-      <!-- <LinePath2
-        v-for="(line, li) in lines"
-        :key="li"
-        :path="line.path"
-        :status="line.status"
-        :line-id="li"
-      /> -->
     </g>
     <g data-name="icons">
       <slot name="icons" :icons="flatScene">
         <DefaultIcon
-          v-for="({ x, y, status, id, context }, ci) in flatScene"
+          v-for="({ x, y, w, h, status, id, context }, ci) in flatScene"
           :key="ci"
           :data-id="id"
           :x="x"
           :y="y"
           :context="context"
-          width="50"
-          height="50"
+          :width="w"
+          :height="h"
           :status="status"
         />
       </slot>
     </g>
   </svg>
-  <div>
-    {{ flatScene }}
-    {{ lines }}
-  </div>
 </template>
 
 <script>
   import InstanceIcon from './icones/Instance.vue';
   import DefaultIcon from './icones/Default.vue';
   import LinePath from './paths/Line.vue';
-  import LinePath2 from './paths/Line2.vue';
-  import { computed, ref, onMounted } from 'vue';
-  import { buildScene, buildLines, flatten } from './helpers/scene.js';
+  import { computed } from 'vue';
+  import { buildHorizontalScene, buildVerticalScene, buildLines, flatten } from './helpers/scene.js';
 
   export default {
     name: 'InfrastructureGraph',
@@ -58,7 +46,6 @@
       InstanceIcon,
       DefaultIcon,
       LinePath,
-      LinePath2,
     },
     props: {
       width: Number,
@@ -66,6 +53,11 @@
       kind: {
         type: String,
         validator: v => ['dark', 'light'].includes(v),
+      },
+      direction: {
+        type: String,
+        default: 'horizontal',
+        validator: v => ['horizontal', 'vertical'].includes(v),
       },
       config: {
         type: Object,
@@ -85,12 +77,17 @@
         pathKind: 'straight',
       };
 
+      const uniqueId = computed(() => {
+        return Math.floor(Math.random() * 50) * Math.floor(Math.random() * 50) * Math.floor(Math.random() * 50);
+      });
+
       const canvasClass = computed(() => {
         return `${BASE_CLASS} ${BASE_CLASS}${props.kind === 'dark' ? '--dark' : '--light'}`;
       });
 
       const processedScene = computed(() => {
-        return props.scene ? buildScene(props.scene, { height: props.height, width: props.width }) : [];
+        const buildFunction = props.direction === 'horizontal' ? buildHorizontalScene : buildVerticalScene;
+        return props.scene ? buildFunction(props.scene, { height: props.height, width: props.width }) : [];
       });
 
       const flatScene = computed(() => {
@@ -103,7 +100,7 @@
         return buildLines(flatScene.value, config);
       });
 
-      return { canvasClass, processedScene, flatScene, lines };
+      return { canvasClass, processedScene, flatScene, lines, uniqueId };
     },
   };
 </script>

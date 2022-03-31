@@ -49,6 +49,25 @@
     [{ id: 'RDS', status: 'online', kind: 'db',  w:80, h:80}],
   ];
 
+  const scene2 = [
+    [{ id: 'top', status: 'online', kind: 'default', to: ['middle1', 'middle2'], w: 40, h: 40 }],
+    [
+      { id: 'middle1', status: 'online', kind: 'default', to: ['bottom1', 'bottom2', 'bottom3'], w: 40, h: 40 },
+      { id: 'middle2', status: 'online', kind: 'default', to: ['bottom1', 'bottom2', 'bottom3'], w: 40, h: 40 },
+    ],
+    [
+      { id: 'bottom1', status: 'online', kind: 'default', to: ['very-bottom1', 'very-bottom2', 'very-bottom3', 'very-bottom4'], w: 40, h: 40 },
+      { id: 'bottom2', status: 'online', kind: 'default', to: ['very-bottom1', 'very-bottom2', 'very-bottom3', 'very-bottom4'], w: 40, h: 40 },
+      { id: 'bottom3', status: 'online', kind: 'default', to: ['very-bottom1', 'very-bottom2', 'very-bottom3', 'very-bottom4'], w: 40, h: 40 },
+    ],
+    [
+      { id: 'very-bottom1', status: 'online', kind: 'default', to: [], w: 40, h: 40 },
+      { id: 'very-bottom2', status: 'online', kind: 'default', to: [], w: 40, h: 40 },
+      { id: 'very-bottom3', status: 'online', kind: 'default', to: [], w: 40, h: 40 },
+      { id: 'very-bottom4', status: 'online', kind: 'default', to: [], w: 40, h: 40 },
+    ]
+  ]
+
   const resolveIconeByKind = kind => {
     switch(kind) {
       case 'instances':
@@ -100,6 +119,15 @@
         :status="status"
       />
     </template>
+  </InfrastructureGraph>
+  <InfrastructureGraph
+    :width="400"
+    :height="600"
+    kind="light"
+    direction="vertical"
+    :scene="scene2"
+    :config="graphConfig"
+  >
   </InfrastructureGraph>
 </template>
 

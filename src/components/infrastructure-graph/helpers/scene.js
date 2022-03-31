@@ -1,5 +1,5 @@
 
-const buildScene = (scene, config) => {
+const buildHorizontalScene = (scene, config) => {
   const { width, height } = config;
   return scene.map((col, colIndex) => {
     return col.map((row, rowIndex) => {
@@ -10,6 +10,18 @@ const buildScene = (scene, config) => {
     });
   });
 };
+
+
+const buildVerticalScene = (scene, config) => {
+  const { width, height } = config;
+  return scene.map((row, rowIndex) => {
+    return row.map((col, colIndex) => {
+      const x = ((width/row.length) * ( colIndex + 1)) - ((width/row.length)/2);
+      const y = (height/scene.length) * (rowIndex + 1) - (height/scene.length)/2;
+      return {...col, x, y};
+    });
+  });
+}
 
 const computePathY = ({ targetIndex, targetsLength, originsGap, y }) => {
   const length = (targetsLength-1) * originsGap;
@@ -51,10 +63,6 @@ const genCurvedZigZagPath = (item, target, config, context) => {
     return `M${item.x} ${item.y} V${target.y}`
   }
 
-  // if (item.y === target.y) {
-  //   return `M${item.x} ${item.y} H${target.x}`
-  // }
-
   const baseY = config.dispatchOrigins
   ? computePathY({
       targetIndex: context.targetIndex,
@@ -93,7 +101,9 @@ const genPath = (item, target, config = {}, context) => {
 
 const buildLines = (scene, config) => {
   return scene.reduce((linesAcc, item) => {
+    console.log(item);
     if (item.to) {
+      console.log(item);
       const targetsLength = item.to.length;
       const res = item.to.reduce((acc, to, toIndex) => {
          const target = scene.find(itm => itm.id === to);
@@ -124,4 +134,4 @@ const flatten = scene => {
   return res;
 }
 
-export { buildScene, buildLines, flatten };
+export { buildHorizontalScene, buildVerticalScene, buildLines, flatten };
