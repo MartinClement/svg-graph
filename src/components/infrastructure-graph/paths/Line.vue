@@ -3,7 +3,7 @@
   const props = defineProps({
     path: String,
     status: String,
-    lineId: Number,
+    lineId: String,
   });
 
   const lineRef = ref(undefined);
@@ -14,10 +14,6 @@
   const pathTotalLength = computed(() => lineRef.value ? lineRef.value.getTotalLength() : 10000);
   const dashArray = computed(() => pathTotalLength.value / 10);
   const dashOffset = computed(() => pathTotalLength.value);
-
-  onMounted(() => {
-    console.log(pathTotalLength.value);
-  })
 </script>
 
 <template>

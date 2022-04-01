@@ -12,6 +12,8 @@
   const currentPathKind = ref('straight');
   const currentDispatchOrigins = ref(false);
   const lineGap = ref(5);
+  const curveGutter = ref(20);
+
   const updateCurrentPathKind = kind => {
     currentPathKind.value = kind;
   };
@@ -24,11 +26,17 @@
     lineGap.value = e.target.value;
   };
 
+  const updateCurveGutter = e => {
+    curveGutter.value = Number(e.target.value);
+  }
+
   const graphConfig = computed(() => {
+    console.log(curveGutter.value);
     return {
       pathKind: currentPathKind.value,
       dispatchOrigins: currentDispatchOrigins.value,
       originsGap: lineGap.value,
+      curveGutter: curveGutter.value,
     }
   })
 
@@ -96,9 +104,16 @@
     <button type="button" @click="updateDispatchOrigins(false)">Off</button>
   </div>
   <div class="button-wrapper">
-    <span>lineGap:</span>
-    <input :value="lineGap" type="range" @change="e => updateLineGap(e)" min="0" max="20"/>
-    <span>{{ lineGap }}</span>
+    <span>
+      <span>lineGap:</span>
+      <input :value="lineGap" type="range" @change="e => updateLineGap(e)" min="0" max="20"/>
+      <span>{{ lineGap }}</span>
+    </span>
+    <span>
+      <span>linecurve gutter:</span>
+      <input :value="curveGutter" type="range" @change="e => updateCurveGutter(e)" min="0" max="60" step="10"/>
+      <span>{{ curveGutter }}</span>
+    </span>
   </div>
   <InfrastructureGraph
     :width="800"
