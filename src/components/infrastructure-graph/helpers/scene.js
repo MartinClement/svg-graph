@@ -53,10 +53,10 @@ const buildVerticalScene = (scene, config) => {
   });
 }
 
-const computePathStartY = ({ targetIndex, targetsLength, originsGap, y }) => {
-  const length = (targetsLength-1) * originsGap;
-  const halfLength = length / 2;
-  return y + ((targetIndex) * originsGap - halfLength);
+const computeGappedY = ({ index, length, lineGap, y }) => {
+  const totalLength = (length-1) * lineGap;
+  const halfLength = totalLength / 2;
+  return y + ((index) * lineGap - halfLength);
 };
 
 const genStraightPath = (item, target) => {
@@ -72,28 +72,23 @@ const genLTRZigZagPath = (item, target, config, context) => {
     return `M${item.x} ${item.y} V${target.y}`
   }
 
-  const baseY = computePathStartY({
-    targetIndex: context.targetIndex,
-    targetsLength: context.targetsLength,
-    originsGap: config.originsGap,
+  const startY = computeGappedY({
+    index: context.index,
+    length: context.length,
+    lineGap: config.lineGap,
     y: item.y,
   });
 
-  const endY = computedPathEndY({
-    targetIndex: context.targetIndex,
-    targetsLength: context.targetsLength,
-    originsGap: config.originsGap,
-  });
 
-  if (baseY === target.y) {
-    return `M${item.x} ${baseY} H${target.x}`
+  if (startY === target.y) {
+    return `M${item.x} ${startY} H${target.x}`
   }
 
   return `
-     M${item.x} ${baseY}
+     M${item.x} ${startY}
      H${turnStart}
-     C${middle} ${baseY}, ${middle} ${baseY}, ${middle} ${baseY > target.y ? baseY - curveGutter : baseY + curveGutter}
-     V${baseY < target.y ? target.y - curveGutter : target.y + curveGutter }
+     C${middle} ${startY}, ${middle} ${startY}, ${middle} ${startY > target.y ? startY - curveGutter : startY + curveGutter}
+     V${startY < target.y ? target.y - curveGutter : target.y + curveGutter }
      C${middle} ${target.y}, ${middle} ${target.y}, ${middle + curveGutter} ${ target.y}
      H${target.x}
    `;
@@ -117,7 +112,7 @@ const buildLines = (scene, config) => {
       const res = item.to.reduce((acc, to, toIndex) => {
          const target = scene.find(itm => itm.id === to);
          if (target) {
-          const path = genPath(item, target, config, { targetsLength, targetIndex: toIndex });
+          const path = genPath(item, target, config, { length: targetsLength, index: toIndex });
           return [
             ...acc,
             {

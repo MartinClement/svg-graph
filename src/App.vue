@@ -26,10 +26,9 @@
   }
 
   const graphConfig = computed(() => {
-    console.log(curveGutter.value);
     return {
       pathKind: currentPathKind.value,
-      originsGap: lineGap.value,
+      lineGap: lineGap.value,
       curveGutter: curveGutter.value,
     }
   })
@@ -89,7 +88,7 @@
   <div class="button-wrapper">
     <span>Path Kind:</span>
     <button type="button" @click="updateCurrentPathKind('straight')">Straight</button>
-    <button type="button" @click="updateCurrentPathKind('zigzag')">Curved ZigZag</button>
+    <button type="button" @click="updateCurrentPathKind('zigzag')">ZigZag</button>
   </div>
   <div class="button-wrapper">
     <span>

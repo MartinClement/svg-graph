@@ -71,9 +71,8 @@
     setup(props) {
       const BASE_CLASS = 'main_canvas';
       const BASE_CONFIG = {
-        dispatchOrigins: false,
         curveGutter: 20,
-        originsGap: 5,
+        lineGap: 0,
         pathKind: 'straight',
       };
 
