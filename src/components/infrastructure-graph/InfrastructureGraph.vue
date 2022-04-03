@@ -16,9 +16,9 @@
       />
     </g>
     <g data-name="icons">
-      <slot name="icons" :icons="flatScene">
+      <slot name="icons" :icons="processedScene">
         <DefaultIcon
-          v-for="({ x, y, w, h, status, id, context }, ci) in flatScene"
+          v-for="({ x, y, w, h, status, id, context }, ci) in processedScene"
           :key="ci"
           :data-id="id"
           :x="x"
@@ -38,7 +38,7 @@
   import DefaultIcon from './icones/Default.vue';
   import LinePath from './paths/Line.vue';
   import { computed } from 'vue';
-  import { buildHorizontalScene, buildVerticalScene, buildLines, flatten } from './helpers/scene.js';
+  import { buildHorizontalScene, buildVerticalScene, buildLines } from './helpers/scene.js';
 
   export default {
     name: 'InfrastructureGraph',
@@ -90,17 +90,12 @@
         return props.scene ? buildFunction(props.scene, { height: props.height, width: props.width }) : [];
       });
 
-      const flatScene = computed(() => {
-        const res = flatten(processedScene.value);
-        return res;
-      });
-
       const lines = computed(() => {
         const config = Object.assign(BASE_CONFIG, props.config)
-        return buildLines(flatScene.value, config);
+        return buildLines(processedScene.value, config);
       });
 
-      return { canvasClass, processedScene, flatScene, lines, uniqueId };
+      return { canvasClass, processedScene, lines, uniqueId };
     },
   };
 </script>
@@ -113,8 +108,11 @@
   };
 </style>
 <style scoped lang="postcss">
+  .main_canvas {
+    border: 2px solid #424242;
+  }
   .main_canvas--dark {
-    background-color: #212121;
+    background-color: #121212;
   }
   .main_canvas--light {
     background-color: #777;

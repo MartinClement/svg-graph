@@ -10,16 +10,11 @@
   import { computed, ref } from 'vue';
 
   const currentPathKind = ref('straight');
-  const currentDispatchOrigins = ref(false);
   const lineGap = ref(5);
   const curveGutter = ref(20);
 
   const updateCurrentPathKind = kind => {
     currentPathKind.value = kind;
-  };
-
-  const updateDispatchOrigins = value => {
-    currentDispatchOrigins.value = value;
   };
 
   const updateLineGap = e => {
@@ -34,7 +29,6 @@
     console.log(curveGutter.value);
     return {
       pathKind: currentPathKind.value,
-      dispatchOrigins: currentDispatchOrigins.value,
       originsGap: lineGap.value,
       curveGutter: curveGutter.value,
     }
@@ -95,13 +89,7 @@
   <div class="button-wrapper">
     <span>Path Kind:</span>
     <button type="button" @click="updateCurrentPathKind('straight')">Straight</button>
-    <button type="button" @click="updateCurrentPathKind('straight-zigzag')">Straight ZigZag</button>
-    <button type="button" @click="updateCurrentPathKind('curved-zigzag')">Curved ZigZag</button>
-  </div>
-  <div class="button-wrapper">
-    <span>Dispatch Origins:</span>
-    <button type="button" @click="updateDispatchOrigins(true)">On</button>
-    <button type="button" @click="updateDispatchOrigins(false)">Off</button>
+    <button type="button" @click="updateCurrentPathKind('zigzag')">Curved ZigZag</button>
   </div>
   <div class="button-wrapper">
     <span>
@@ -118,7 +106,7 @@
   <InfrastructureGraph
     :width="800"
     :height="400"
-    kind="light"
+    kind="dark"
     :scene="scene"
     :config="graphConfig"
   >
@@ -147,16 +135,21 @@
 </template>
 
 <style>
+html, body {
+  padding: 0;
+  margin: 0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: #0075ff;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 30px;
+  background-color: #212121;
 }
 
 .button-wrapper {
